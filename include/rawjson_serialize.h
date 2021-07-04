@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define RAWJSON_HUMAN_USE
-
 #ifdef RAWJSON_HUMAN_USE
 typedef enum
 {
@@ -14,13 +12,6 @@ typedef enum
     RAWJSON_COMMA_START,
 } rawjson_comman_state_t;
 #endif
-
-typedef enum
-{
-    RAWJSON_ARRAY_VALUE = 0,
-    RAWJSON_ARRAY_STRING,
-    RAWJSON_ARRAY_OBJECT
-} rawjson_array_type_t;
 
 typedef struct rawjson_ser_s rawjson_ser_t;
 
@@ -61,9 +52,9 @@ ssize_t rawjson_ser_true(rawjson_ser_t *ser);
 ssize_t rawjson_ser_false(rawjson_ser_t *ser);
 
 // rawjson array serialize
-ssize_t rawjson_ser_array_begin(rawjson_ser_t *ser, rawjson_array_type_t type);
-ssize_t rawjson_ser_array_end(rawjson_ser_t *ser, rawjson_array_type_t type);
-ssize_t rawjson_ser_array_split(rawjson_ser_t *ser, rawjson_array_type_t type);
+ssize_t rawjson_ser_array_begin(rawjson_ser_t *ser);
+ssize_t rawjson_ser_array_end(rawjson_ser_t *ser);
+ssize_t rawjson_ser_array_split(rawjson_ser_t *ser);
 ssize_t rawjson_ser_array_string(rawjson_ser_t *ser, const char *value, size_t len_value);
 
 #ifdef RAWJSON_HUMAN_USE
@@ -119,44 +110,39 @@ static inline int __rawjson_object_space_end(rawjson_ser_t *ser)
 
 #define rawjson_hser_object(ser) for (int __rj_obj = __rawjson_object_space_begin(ser); __rj_obj; __rj_obj = __rawjson_object_space_end(ser))
 
-static inline int __rawjson_array_space_begin(rawjson_ser_t *ser, rawjson_array_type_t type)
+static inline int __rawjson_array_space_begin(rawjson_ser_t *ser)
 {
-    rawjson_ser_array_begin(ser, type);
+    rawjson_ser_array_begin(ser);
     return 0;
 }
 
-static inline int __rawjson_array_space_end(rawjson_ser_t *ser, rawjson_array_type_t type, int idx, int len)
+static inline int __rawjson_array_space_end(rawjson_ser_t *ser, int idx, int len)
 {
     if (idx < len)
     {
         return 1;
     }
     ser->comma = RAWJSON_COMMA_START;
-    rawjson_ser_array_end(ser, type);
+    rawjson_ser_array_end(ser);
     return 0;
 }
 
-#define rawjson_hser_array_loop(ser, type, idx, len) for (int idx = __rawjson_array_space_begin(ser, type), __rj_is_first_element = 1, __rj_array_type = type; __rawjson_array_space_end(ser, type, idx, len); idx++)
+#define rawjson_hser_array_loop(ser, idx, len) for (int idx = __rawjson_array_space_begin(ser), __rj_is_first_element = 1; __rawjson_array_space_end(ser, idx, len); idx++)
 
-#define rawjson_hser_array_loop_append_elem(ser)       \
-    if (__rj_is_first_element)                         \
-    {                                                  \
-        __rj_is_first_element = 0;                     \
-    }                                                  \
-    else                                               \
-    {                                                  \
-        rawjson_ser_array_split(ser, __rj_array_type); \
-    }                                                  \
-    if (RAWJSON_ARRAY_OBJECT == __rj_array_type)       \
-    {                                                  \
-        ser->comma = RAWJSON_COMMA_NONE;               \
+#define rawjson_hser_array_loop_append_elem(ser) \
+    if (__rj_is_first_element)                   \
+    {                                            \
+        __rj_is_first_element = 0;               \
+    }                                            \
+    else                                         \
+    {                                            \
+        rawjson_ser_array_split(ser);            \
     }
 
-#define rawjson_hser_array_loop_break(ser)                     \
-    {                                                          \
-        __rawjson_array_space_end(ser, __rj_array_type, 0, 0); \
-        break;                                                 \
+#define rawjson_hser_array_loop_break(ser)    \
+    {                                         \
+        __rawjson_array_space_end(ser, 0, 0); \
+        break;                                \
     }
-
 #endif
 #endif

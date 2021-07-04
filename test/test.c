@@ -9,6 +9,8 @@
 #include <sys/time.h>
 
 #include "ctype_serialize.h"
+
+#define RAWJSON_HUMAN_USE
 #include "rawjson_serialize.h"
 
 typedef char *(*itoa_fn)(int, char *);
@@ -95,34 +97,6 @@ void test_json_serialize()
     };
     rawjson_ser_t *ser = (rawjson_ser_t *)&file_ser;
 
-    if (0)
-    {
-        rawjson_ser_obj_begin(ser);
-        rawjson_ser_nocomma_field(ser, "bool", 4);
-        rawjson_ser_true(ser);
-        rawjson_ser_comma_field(ser, "isObject", 8);
-        rawjson_ser_false(ser);
-        rawjson_ser_comma_field(ser, "object", 6);
-        rawjson_ser_obj_begin(ser);
-        rawjson_ser_nocomma_field_string(ser, "hello", 5, "world", 5);
-        rawjson_ser_comma_field(ser, "number", 6);
-        rawjson_ser_i32(ser, 3345);
-        rawjson_ser_comma_field(ser, "double", 6);
-        rawjson_ser_double(ser, 33.434456, 3);
-        rawjson_ser_comma_field(ser, "array", 5);
-        rawjson_ser_array_begin(ser, RAWJSON_ARRAY_VALUE);
-        rawjson_ser_i32(ser, 0);
-        for (int i = 1; i < 10; i++)
-        {
-            rawjson_ser_array_split(ser, RAWJSON_ARRAY_VALUE);
-            rawjson_ser_i32(ser, i);
-        }
-        rawjson_ser_array_end(ser, RAWJSON_ARRAY_VALUE);
-        rawjson_ser_obj_end(ser);
-        rawjson_ser_obj_end(ser);
-        rawjson_ser_close(ser);
-    }
-    else
     {
         rawjson_hser_object(ser)
         {
@@ -134,30 +108,34 @@ void test_json_serialize()
                 rawjson_ser_float(ser, 123.456, 5);
             }
             rawjson_hser_filed(ser, "arr", 3);
-            rawjson_hser_array_loop(ser, RAWJSON_ARRAY_OBJECT, i, 10)
+            rawjson_hser_array_loop(ser, i, 10)
             {
                 if (7 == i)
                     rawjson_hser_array_loop_break(ser);
                 rawjson_hser_array_loop_append_elem(ser);
-                rawjson_hser_filed(ser, "idx", 3);
-                rawjson_ser_i32(ser, i);
-                rawjson_hser_filed(ser, "val", 3);
-                rawjson_ser_float(ser, sinf(i / 8.0 * M_PI), 5);
-                rawjson_hser_filed(ser, "subarray", 8);
-                rawjson_hser_array_loop(ser, RAWJSON_ARRAY_STRING, j, 5)
+                rawjson_hser_object(ser)
                 {
-                    const char *test_str[] = {"Hello", "World", "RawJson", "Protobuf", "Rust"};
-                    if (3 == j)
-                        rawjson_hser_array_loop_break(ser);
+                    rawjson_hser_filed(ser, "idx", 3);
+                    rawjson_ser_i32(ser, i);
+                    rawjson_hser_filed(ser, "val", 3);
+                    rawjson_ser_float(ser, sinf(i / 8.0 * M_PI), 5);
+                    rawjson_hser_filed(ser, "subarray", 8);
+                    rawjson_hser_array_loop(ser, j, 5)
+                    {
+                        const char *test_str[] = {"Hello", "World", "RawJson", "Protobuf", "Rust"};
+                        if (2 == j)
+                            rawjson_hser_array_loop_break(ser);
 
-                    rawjson_hser_array_loop_append_elem(ser);
-                    size_t len = strlen(test_str[j]);
-                    rawjson_ser_array_string(ser, test_str[j], len);
+                        rawjson_hser_array_loop_append_elem(ser);
+                        size_t len = strlen(test_str[j]);
+                        rawjson_ser_array_string(ser, test_str[j], len);
+                    }
+                    rawjson_hser_filed(ser, "zero", 4);
+                    rawjson_ser_true(ser);
                 }
             }
         }
     }
-
     printf("\njson size: %ld\n", file_ser.cnt);
 }
 
