@@ -29,6 +29,17 @@ const char bool_false[] = "false";
 
 #define static_len(x) (sizeof(x) - 1)
 
+#define rawjson_write(len, ser, text, len_text)           \
+                                                          \
+    {                                                     \
+        ssize_t ret = ser->write_cb(ser, text, len_text); \
+        if (ret != len_text)                              \
+        {                                                 \
+            return ret;                                   \
+        }                                                 \
+        len += ret;                                       \
+    }
+
 ssize_t rawjson_ser_obj_begin(rawjson_ser_t *ser)
 {
     return ser->write_cb(ser, object_start, static_len(object_start));
@@ -97,14 +108,16 @@ ssize_t rawjson_ser_double(rawjson_ser_t *ser, double number, int ndigit)
     return ser->write_cb(ser, buf, strnlen(out, sizeof(buf)));
 }
 
-ssize_t rawjson_ser_true(rawjson_ser_t *ser)
+ssize_t rawjson_ser_bool(rawjson_ser_t *ser, bool val)
 {
-    return ser->write_cb(ser, bool_true, static_len(bool_true));
-}
-
-ssize_t rawjson_ser_false(rawjson_ser_t *ser)
-{
-    return ser->write_cb(ser, bool_false, static_len(bool_false));
+    if (val)
+    {
+        return ser->write_cb(ser, bool_true, static_len(bool_true));
+    }
+    else
+    {
+        return ser->write_cb(ser, bool_false, static_len(bool_false));
+    }
 }
 
 ssize_t rawjson_ser_comma_field_string(rawjson_ser_t *ser, const char *field, size_t len_field, const char *value, size_t len_value)
