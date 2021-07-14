@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <sys/time.h>
 
 #ifdef RAWJSON_HUMAN_USE
 typedef enum
@@ -32,7 +33,7 @@ struct rawjson_ser_s
 
 struct rawjson_buf_s
 {
-    const char* data;
+    const char *data;
     size_t len;
 };
 
@@ -66,6 +67,7 @@ static ssize_t rawjson_ser_float(rawjson_ser_t *ser, float number, int ndigit)
 
 ssize_t rawjson_ser_bool(rawjson_ser_t *ser, bool val);
 
+// rawjson mapfn serialize
 static inline ssize_t rawjson_ser_map(rawjson_ser_t *ser, map_fn map, int val)
 {
     size_t _len = 0;
@@ -73,28 +75,17 @@ static inline ssize_t rawjson_ser_map(rawjson_ser_t *ser, map_fn map, int val)
     return ser->write_cb(ser, _val, _len);
 }
 
+// rawjson time serialize
+ssize_t rawjson_ser_localtime(rawjson_ser_t *ser, const struct timeval *tv);
+ssize_t rawjson_ser_gmttime(rawjson_ser_t *ser, const struct timeval *tv);
+
 // rawjson array serialize
 ssize_t rawjson_ser_array_begin(rawjson_ser_t *ser);
 ssize_t rawjson_ser_array_end(rawjson_ser_t *ser);
 ssize_t rawjson_ser_array_split(rawjson_ser_t *ser);
 
-static inline ssize_t rawjson_ser_bytes(rawjson_ser_t *ser, const char* value, size_t len_value) {
-    ssize_t ret = 0;
-    ssize_t len = 0;
-    ret = rawjson_ser_array_begin(ser);
-    if(ret < 0) { return ret; } else { len += ret; }
-    for(size_t idx = 0; idx < len_value; idx++) {
-        if(idx) {
-            ret = rawjson_ser_array_split(ser);
-            if(ret < 0) { return ret; } else { len += ret; }
-        }
-        ret = rawjson_ser_u32(ser, value[idx]);
-        if(ret < 0) { return ret; } else { len += ret; }
-    }
-    ret = rawjson_ser_array_end(ser);
-    if(ret < 0) { return ret; } else { len += ret; }
-    return len;
-}
+// rawjson bytes serialize
+ssize_t rawjson_ser_bytes(rawjson_ser_t *ser, const char *value, size_t len_value);
 
 #ifdef RAWJSON_HUMAN_USE
 ssize_t static inline rawjson_hser_obj_begin(rawjson_ser_t *ser)
