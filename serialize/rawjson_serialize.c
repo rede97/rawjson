@@ -28,6 +28,8 @@ const char str_field_name_end[] = "\":\"";
 
 const char bool_true[] = "true";
 const char bool_false[] = "false";
+const char null[] = "null";
+
 
 #define static_len(x) (sizeof(x) - 1)
 
@@ -291,5 +293,12 @@ ssize_t rawjson_ser_bytes(rawjson_ser_t *ser, const char *value, size_t len_valu
     }
     ret = rawjson_ser_array_end(ser);
     ret_check(ret, len);
+    return len;
+}
+
+ssize_t rawjson_ser_null(rawjson_ser_t *ser)
+{
+    ssize_t len = 0;
+    rawjson_write(len, ser, null, static_len(null));
     return len;
 }

@@ -67,6 +67,8 @@ static ssize_t rawjson_ser_float(rawjson_ser_t *ser, float number, int ndigit)
 
 ssize_t rawjson_ser_bool(rawjson_ser_t *ser, bool val);
 
+ssize_t rawjson_ser_null(rawjson_ser_t *ser);
+
 // rawjson mapfn serialize
 static inline ssize_t rawjson_ser_map(rawjson_ser_t *ser, map_fn map, int val)
 {
