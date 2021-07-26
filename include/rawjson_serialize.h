@@ -7,13 +7,11 @@
 #include <stdbool.h>
 #include <sys/time.h>
 
-#ifdef RAWJSON_HUMAN_USE
 typedef enum
 {
     RAWJSON_COMMA_NONE,
     RAWJSON_COMMA_START,
 } rawjson_comman_state_t;
-#endif
 
 typedef struct rawjson_ser_s rawjson_ser_t;
 typedef struct rawjson_buf_s rj_string_t;
@@ -26,9 +24,6 @@ struct rawjson_ser_s
 {
     rawjson_write_fn write_cb;
     void *data;
-#ifdef RAWJSON_HUMAN_USE
-    rawjson_comman_state_t comma;
-#endif
 };
 
 struct rawjson_buf_s
@@ -89,24 +84,23 @@ ssize_t rawjson_ser_array_split(rawjson_ser_t *ser);
 // rawjson bytes serialize
 ssize_t rawjson_ser_bytes(rawjson_ser_t *ser, const char *value, size_t len_value);
 
-#ifdef RAWJSON_HUMAN_USE
-ssize_t static inline rawjson_hser_obj_begin(rawjson_ser_t *ser)
+ssize_t static inline rawjson_hser_obj_begin(rawjson_comman_state_t *comma, rawjson_ser_t *ser)
 {
-    ser->comma = RAWJSON_COMMA_NONE;
+    *comma = RAWJSON_COMMA_NONE;
     return rawjson_ser_obj_begin(ser);
 }
 
-ssize_t static inline rawjson_hser_obj_end(rawjson_ser_t *ser)
+ssize_t static inline rawjson_hser_obj_end(rawjson_comman_state_t *comma, rawjson_ser_t *ser)
 {
-    ser->comma = RAWJSON_COMMA_START;
+    *comma = RAWJSON_COMMA_START;
     return rawjson_ser_obj_end(ser);
 }
 
-size_t static inline rawjson_hser_filed(rawjson_ser_t *ser, const char *field, size_t len_field)
+size_t static inline rawjson_hser_filed(rawjson_comman_state_t *comma, rawjson_ser_t *ser, const char *field, size_t len_field)
 {
-    if (RAWJSON_COMMA_NONE == ser->comma)
+    if (RAWJSON_COMMA_NONE == *comma)
     {
-        ser->comma = RAWJSON_COMMA_START;
+        *comma = RAWJSON_COMMA_START;
         return rawjson_ser_nocomma_field(ser, field, len_field);
     }
     else
@@ -115,11 +109,11 @@ size_t static inline rawjson_hser_filed(rawjson_ser_t *ser, const char *field, s
     }
 }
 
-size_t static inline rawjson_hser_filed_string(rawjson_ser_t *ser, const char *field, size_t len_field, const char *value, size_t len_value)
+size_t static inline rawjson_hser_filed_string(rawjson_comman_state_t *comma, rawjson_ser_t *ser, const char *field, size_t len_field, const char *value, size_t len_value)
 {
-    if (RAWJSON_COMMA_NONE == ser->comma)
+    if (RAWJSON_COMMA_NONE == *comma)
     {
-        ser->comma = RAWJSON_COMMA_START;
+        *comma = RAWJSON_COMMA_START;
         return rawjson_ser_nocomma_field_string(ser, field, len_field, value, len_value);
     }
     else
@@ -128,19 +122,4 @@ size_t static inline rawjson_hser_filed_string(rawjson_ser_t *ser, const char *f
     }
 }
 
-static inline int __rawjson_object_space_begin(rawjson_ser_t *ser)
-{
-    rawjson_hser_obj_begin(ser);
-    return 1;
-}
-
-static inline int __rawjson_object_space_end(rawjson_ser_t *ser)
-{
-    rawjson_hser_obj_end(ser);
-    return 0;
-}
-
-#define rawjson_hser_object(ser) for (int __rj_obj = __rawjson_object_space_begin(ser); __rj_obj; __rj_obj = __rawjson_object_space_end(ser))
-
-#endif
 #endif
