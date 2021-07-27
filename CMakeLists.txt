@@ -6,6 +6,7 @@ project(rawjson)
 
 add_library(rawjson STATIC
     serialize/branchlut2.c
+    # serialize/interger.c
     serialize/rawjson_serialize.c
 )
 

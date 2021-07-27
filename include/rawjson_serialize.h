@@ -1,11 +1,7 @@
-#ifndef __RAWJSON_H__
-#define __RAWJSON_H__
+#ifndef __RAWJSON_SERIALIZE_H__
+#define __RAWJSON_SERIALIZE_H__
 
-#include <stddef.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <sys/time.h>
+#include "rawjson.h"
 
 typedef enum
 {
@@ -55,7 +51,7 @@ ssize_t rawjson_ser_i64(rawjson_ser_t *ser, int64_t number);
 ssize_t rawjson_ser_u64(rawjson_ser_t *ser, uint64_t number);
 ssize_t rawjson_ser_double(rawjson_ser_t *ser, double number, int ndigit);
 
-static ssize_t rawjson_ser_float(rawjson_ser_t *ser, float number, int ndigit)
+static ssize_t rawjson_inline rawjson_ser_float(rawjson_ser_t *ser, float number, int ndigit)
 {
     return rawjson_ser_double(ser, (double)number, ndigit);
 }
@@ -65,7 +61,7 @@ ssize_t rawjson_ser_bool(rawjson_ser_t *ser, bool val);
 ssize_t rawjson_ser_null(rawjson_ser_t *ser);
 
 // rawjson mapfn serialize
-static inline ssize_t rawjson_ser_map(rawjson_ser_t *ser, map_fn map, int val)
+ssize_t static rawjson_inline rawjson_ser_map(rawjson_ser_t *ser, map_fn map, int val)
 {
     size_t _len = 0;
     const char *_val = map(val, &_len);
@@ -84,21 +80,21 @@ ssize_t rawjson_ser_array_split(rawjson_ser_t *ser);
 // rawjson bytes serialize
 ssize_t rawjson_ser_bytes(rawjson_ser_t *ser, const char *value, size_t len_value);
 
-ssize_t static inline rawjson_hser_obj_begin(rawjson_comman_state_t *comma, rawjson_ser_t *ser)
+ssize_t static rawjson_inline rawjson_hser_obj_begin(rawjson_comman_state_t *comma, rawjson_ser_t *ser)
 {
     *comma = RAWJSON_COMMA_NONE;
     return rawjson_ser_obj_begin(ser);
 }
 
-ssize_t static inline rawjson_hser_obj_end(rawjson_comman_state_t *comma, rawjson_ser_t *ser)
+ssize_t static rawjson_inline rawjson_hser_obj_end(rawjson_comman_state_t *comma, rawjson_ser_t *ser)
 {
     *comma = RAWJSON_COMMA_START;
     return rawjson_ser_obj_end(ser);
 }
 
-size_t static inline rawjson_hser_field(rawjson_comman_state_t *comma, rawjson_ser_t *ser, const char *field, size_t len_field)
+size_t static rawjson_inline rawjson_hser_field(rawjson_comman_state_t *comma, rawjson_ser_t *ser, const char *field, size_t len_field)
 {
-    if (RAWJSON_COMMA_NONE == *comma)
+    if (rawjson_unlikely(RAWJSON_COMMA_NONE == *comma))
     {
         *comma = RAWJSON_COMMA_START;
         return rawjson_ser_nocomma_field(ser, field, len_field);
@@ -109,9 +105,9 @@ size_t static inline rawjson_hser_field(rawjson_comman_state_t *comma, rawjson_s
     }
 }
 
-size_t static inline rawjson_hser_field_string(rawjson_comman_state_t *comma, rawjson_ser_t *ser, const char *field, size_t len_field, const char *value, size_t len_value)
+size_t static rawjson_inline rawjson_hser_field_string(rawjson_comman_state_t *comma, rawjson_ser_t *ser, const char *field, size_t len_field, const char *value, size_t len_value)
 {
-    if (RAWJSON_COMMA_NONE == *comma)
+    if (rawjson_unlikely(RAWJSON_COMMA_NONE == *comma))
     {
         *comma = RAWJSON_COMMA_START;
         return rawjson_ser_nocomma_field_string(ser, field, len_field, value, len_value);

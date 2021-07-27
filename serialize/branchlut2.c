@@ -78,7 +78,7 @@ const char gDigitsLut[200] = {
         MIDDLE8(t16 % 100000000); \
     } while (0)
 
-char *u32toa_branchlut2(uint32_t x, char *p)
+char *write_u32(uint32_t x, char *p)
 {
     if (x < 100000000)
         BEGIN8(x);
@@ -91,17 +91,7 @@ char *u32toa_branchlut2(uint32_t x, char *p)
     return p;
 }
 
-char *i32toa_branchlut2(int32_t x, char *p)
-{
-    uint64_t t;
-    if (x >= 0)
-        t = x;
-    else
-        *p++ = '-', t = -(uint32_t)x;
-    return u32toa_branchlut2(t, p);
-}
-
-char *u64toa_branchlut2(uint64_t x, char *p)
+char *write_u64(uint64_t x, char *p)
 {
     if (x < 100000000)
         BEGIN8(x);
@@ -117,14 +107,4 @@ char *u64toa_branchlut2(uint64_t x, char *p)
     }
     *p = 0;
     return p;
-}
-
-char *i64toa_branchlut2(int64_t x, char *p)
-{
-    uint64_t t;
-    if (x >= 0)
-        t = x;
-    else
-        *p++ = '-', t = -(uint64_t)x;
-    return u64toa_branchlut2(t, p);
 }
