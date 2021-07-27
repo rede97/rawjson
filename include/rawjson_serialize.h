@@ -96,7 +96,7 @@ ssize_t static inline rawjson_hser_obj_end(rawjson_comman_state_t *comma, rawjso
     return rawjson_ser_obj_end(ser);
 }
 
-size_t static inline rawjson_hser_filed(rawjson_comman_state_t *comma, rawjson_ser_t *ser, const char *field, size_t len_field)
+size_t static inline rawjson_hser_field(rawjson_comman_state_t *comma, rawjson_ser_t *ser, const char *field, size_t len_field)
 {
     if (RAWJSON_COMMA_NONE == *comma)
     {
@@ -109,7 +109,7 @@ size_t static inline rawjson_hser_filed(rawjson_comman_state_t *comma, rawjson_s
     }
 }
 
-size_t static inline rawjson_hser_filed_string(rawjson_comman_state_t *comma, rawjson_ser_t *ser, const char *field, size_t len_field, const char *value, size_t len_value)
+size_t static inline rawjson_hser_field_string(rawjson_comman_state_t *comma, rawjson_ser_t *ser, const char *field, size_t len_field, const char *value, size_t len_value)
 {
     if (RAWJSON_COMMA_NONE == *comma)
     {
