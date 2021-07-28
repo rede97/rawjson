@@ -4,13 +4,13 @@ cmake_minimum_required(VERSION 3.10)
 
 project(rawjson) 
 
-add_library(rawjson STATIC
-    serialize/branchlut2.c
-    # serialize/interger.c
+add_library(rawjson_ser STATIC
+    # serialize/branchlut2.c
+    serialize/interger.c
     serialize/rawjson_serialize.c
 )
 
-target_include_directories(rawjson
+target_include_directories(rawjson_ser
     PUBLIC include
     PRIVATE serialize
 )

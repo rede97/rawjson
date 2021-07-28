@@ -10,8 +10,6 @@ typedef struct v64 { char c1, c2, c3, c4, c5, c6, c7, c8; } v64;
 char *write_u32(uint32_t val, char *buf);
 char *write_u64(uint64_t val, char *buf);
 
-char *write_u32_len_8(uint32_t val, char *buf);
-
 static rawjson_inline char *write_i64(int64_t val, char *buf)
 {
     uint64_t t;
