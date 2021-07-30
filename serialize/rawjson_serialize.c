@@ -33,7 +33,7 @@ rawjson_align(2) const char null[] = "null";
 #define static_len(x) (sizeof(x) - 1)
 
 #define rawjson_ret_check(ret, len) \
-    if (rawjson_likely(ret > 0))    \
+    if (rawjson_likely(ret >= 0))   \
     {                               \
         len += ret;                 \
     }                               \
@@ -45,7 +45,7 @@ rawjson_align(2) const char null[] = "null";
 #define rawjson_write(len, ser, text, len_text)           \
     {                                                     \
         ssize_t ret = ser->write_cb(ser, text, len_text); \
-        rawjson_ret_check(ret, len);                              \
+        rawjson_ret_check(ret, len);                      \
     }
 
 ssize_t rawjson_ser_obj_begin(rawjson_ser_t *ser)
