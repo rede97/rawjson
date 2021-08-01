@@ -2,6 +2,7 @@
 #define __RAWJSON_SERIALIZE_H__
 
 #include "rawjson.h"
+#include "rawjson_micro.h"
 
 typedef enum
 {
@@ -10,8 +11,6 @@ typedef enum
 } rawjson_comman_state_t;
 
 typedef struct rawjson_ser_s rawjson_ser_t;
-typedef struct rawjson_buf_s rj_string_t;
-typedef struct rawjson_buf_s rj_bytes_t;
 
 typedef ssize_t (*rawjson_write_fn)(rawjson_ser_t *ser, const char *data, size_t len);
 typedef const char *(*map_fn)(int val, size_t *len);
@@ -20,12 +19,6 @@ struct rawjson_ser_s
 {
     rawjson_write_fn write_cb;
     void *data;
-};
-
-struct rawjson_buf_s
-{
-    const char *data;
-    size_t len;
 };
 
 // rawjson object serialize

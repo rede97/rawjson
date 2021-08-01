@@ -1,6 +1,8 @@
 #ifndef __CTYPE_SERILIZE_H__
 #define __CTYPE_SERILIZE_H__
+
 #include "rawjson.h"
+#include "rawjson_micro.h"
 
 /** 16/32/64-bit vector */
 typedef struct v16 { char c1, c2; } v16;
