@@ -41,3 +41,8 @@ rawjson_der_status_t rawjson_der_init(rawjson_der_t *der, rawjson_der_err_cb on_
     }
     return ret;
 }
+
+rawjson_der_status_t rawjson_der_rfc3399(rawjson_der_t *der, struct tm *time, __useconds_t *usec)
+{
+    rawjson_der_status_t ret = RAWJSON_DER_OK;
+}
