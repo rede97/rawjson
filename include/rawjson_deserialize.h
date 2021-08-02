@@ -2,6 +2,7 @@
 #define __RAWJSON_DESERIALIZE_H__
 
 #include "../yyjson/src/yyjson.h"
+#include "rawjson_micro.h"
 #include "rawjson.h"
 
 typedef enum
@@ -14,9 +15,10 @@ typedef enum
 
 typedef enum
 {
+    RAWJSON_FIELD_BACKTRACKING,
     RAWJSON_FIELD_UNKNOWN,
     RAWJSON_FIELD_MISS
-} rawjson_der_field_err_t;
+} rawjson_field_err_type_t;
 
 typedef enum
 {
@@ -24,18 +26,18 @@ typedef enum
     RAWJSON_VALUE_INVAILD_TYPE,
     RAWJSON_VALUE_IVAILD_FORMAT,
     RAWJSON_VALUE_OUT_OF_RANGE,
-} rawjson_der_value_err_t;
+} rawjson_value_err_type_t;
 
 typedef struct rawjson_field_err_s
 {
-    rawjson_der_field_err_t code;
+    rawjson_field_err_type_t code;
     const char *msg;
 } rawjson_field_err_t;
 
 typedef struct rawjson_value_err_s
 {
-    rawjson_der_value_err_t code;
-    const char *msg;
+    rawjson_value_err_type_t code;
+    const char *require;
     const char *value;
 } rawjson_value_err_t;
 

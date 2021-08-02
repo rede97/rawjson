@@ -64,6 +64,7 @@ ssize_t static rawjson_inline rawjson_ser_map(rawjson_ser_t *ser, map_fn map, in
 // rawjson time serialize
 ssize_t rawjson_ser_localtime(rawjson_ser_t *ser, const struct timeval *tv);
 ssize_t rawjson_ser_gmttime(rawjson_ser_t *ser, const struct timeval *tv);
+ssize_t rawjson_ser_time_rfc3399(rawjson_ser_t *ser, const struct tm *time, __useconds_t usec);
 
 // rawjson array serialize
 ssize_t rawjson_ser_array_begin(rawjson_ser_t *ser);
